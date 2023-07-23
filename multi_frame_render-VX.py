@@ -25,7 +25,7 @@ class Script(scripts.Script):
     def ui(self, is_img2img):   
     
     
-        with gr.Row(variant="compact"):
+        with gr.Row(variant="panel"):
             third_frame_image = gr.Dropdown(label="Third Frame", choices=["None", "FirstGen", "GuideImg", "Historical"], value="FirstGen")
             
             loopback_source = gr.Dropdown(label="Loopback Source", choices=["FirstGen", "InputFrame", "PreviousFrame" ], value="FirstGen")
@@ -35,18 +35,18 @@ class Script(scripts.Script):
             use_nth_frame = gr.Number(label="Use every Nth frame", value="1")
     
 
-        with gr.Row(variant="panel"):
-            color_correction_enabled = gr.Checkbox(label="Enable Color Correction", value=False, elem_id=self.elem_id("color_correction_enabled"))
-           
-            unfreeze_seed = gr.Checkbox(label="Unfreeze Seed", value=False, elem_id=self.elem_id("unfreeze_seed"))
+        with gr.Row(variant="compact"):
             
             render_grid = gr.Checkbox(label="Render grid", value=False, elem_id=self.elem_id("render_grid"))   
             
             grid_rows = gr.Number(label="Rows in grid", value="1")
-           
         
-        with gr.Row(variant="compact"):
-            first_denoise = gr.Slider(minimum=0, maximum=1, step=0.05, label='Initial Denoising', value=0, elem_id=self.elem_id("first_denoise"))        
+        with gr.Row(variant="panel"):
+            first_denoise = gr.Slider(minimum=0, maximum=1, step=0.05, label='Initial Denoising', value=0, elem_id=self.elem_id("first_denoise"))  
+
+            color_correction_enabled = gr.Checkbox(label="Color Correction", value=False, elem_id=self.elem_id("color_correction_enabled"))
+            
+            unfreeze_seed = gr.Checkbox(label="Unfreeze Seed", value=False, elem_id=self.elem_id("unfreeze_seed"))            
         
         with gr.Row(variant="panel"):        
             reference_imgs = gr.File(file_count="multiple", file_types = ['.png','.jpg','.jpeg'], label="Upload Guide Frames", show_label=True, live=True)
