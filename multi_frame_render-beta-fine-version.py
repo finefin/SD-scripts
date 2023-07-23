@@ -17,18 +17,18 @@ from modules import deepbooru
 
 class Script(scripts.Script):
     def title(self):
-        return "(Beta) Multi-frame Video - V0.72x"
+        return "Multi-frame Video - V0.72-beta (fine version)"
 
     def show(self, is_img2img):
         return is_img2img
 
     def ui(self, is_img2img):   
     
-    
         with gr.Row(variant="panel"):
-            third_frame_image = gr.Dropdown(label="Third Frame", choices=["None", "FirstGen", "GuideImg", "Historical"], value="FirstGen")
-            
+        
             loopback_source = gr.Dropdown(label="Loopback Source", choices=["FirstGen", "InputFrame", "PreviousFrame" ], value="FirstGen")
+            
+            third_frame_image = gr.Dropdown(label="Third Frame", choices=["None", "FirstGen", "GuideImg", "Historical"], value="FirstGen")
             
             append_interrogation = gr.Dropdown(label="Append prompt", choices=["None", "CLIP", "DeepBooru"], value="None")
             
@@ -44,13 +44,15 @@ class Script(scripts.Script):
         with gr.Row(variant="panel"):
             first_denoise = gr.Slider(minimum=0, maximum=1, step=0.05, label='Initial Denoising', value=0, elem_id=self.elem_id("first_denoise"))  
 
-            color_correction_enabled = gr.Checkbox(label="Color Correction", value=False, elem_id=self.elem_id("color_correction_enabled"))
+            color_correction_enabled = gr.Checkbox(label="Color Correction", value=True, elem_id=self.elem_id("color_correction_enabled"))
             
             unfreeze_seed = gr.Checkbox(label="Unfreeze Seed", value=False, elem_id=self.elem_id("unfreeze_seed"))            
         
         with gr.Row(variant="panel"):        
             reference_imgs = gr.File(file_count="multiple", file_types = ['.png','.jpg','.jpeg'], label="Upload Guide Frames", show_label=True, live=True)
-        
+            
+        with gr.Accordion(label="About this version!", open=False):
+            gr.HTML(value="<p style='margin-top: 10rem, margin-bottom: 10rem'>Script taken from <a href='https://xanthius.itch.io/multi-frame-rendering-for-stablediffusion'>xanthius</a> (click the link for details and if you like this script you should buy him a coffee!)</p><p>I cleaned up, changed the defaults and sorted the UI. The default values are set to what works best for me in most cases.</p><p>I also added some quality-of-life features:<br><ul><li>Use every Nth frame: skip guide frames (for preview or ebsynth)</li><li>Render grid: enable to render the grid</li><li>Rows in grid: how many horizontal rows the grid should have</li> <li>Fixed the file upload bug</li></ul></p>")
 
         return [append_interrogation, reference_imgs, first_denoise, third_frame_image, color_correction_enabled, unfreeze_seed, render_grid,grid_rows, use_nth_frame, loopback_source]
 
