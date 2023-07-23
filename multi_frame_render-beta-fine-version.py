@@ -1,5 +1,4 @@
-# Beta V0.72 - x
-# tweaked by finefin
+# Beta V0.72 - fine version
 import numpy as np
 from tqdm import trange
 from PIL import Image, ImageSequence, ImageDraw
