@@ -29,7 +29,7 @@ class Script(scripts.Script):
             
             third_frame_image = gr.Dropdown(label="Third Frame", choices=["None", "FirstGen", "GuideImg", "Historical"], value="FirstGen")
             
-            append_interrogation = gr.Dropdown(label="Append prompt", choices=["None", "CLIP", "DeepBooru"], value="None")
+            append_interrogation = gr.Dropdown(label="Append prompt", choices=["None", "CLIP",  "CLIP Historical", "CLIP CNet", "DeepBooru", "DeepBooru Historical","DeepBooru CNet"], value="None")
             
             use_nth_frame = gr.Number(label="Use every Nth frame", value="1")
     
@@ -167,7 +167,8 @@ class Script(scripts.Script):
                     p.denoising_strength = first_denoise
                     p.control_net_input_image = p.control_net_input_image.resize((initial_width, p.height))
                     frames.append(p.control_net_input_image)
-                    
+                   
+                processed = processing.process_images(p) 
 
                 if append_interrogation != "None":
                     p.prompt = original_prompt + ", " if original_prompt != "" else ""
@@ -175,10 +176,16 @@ class Script(scripts.Script):
                         p.prompt += shared.interrogator.interrogate(p.init_images[0])
                     elif append_interrogation == "DeepBooru":
                         p.prompt += deepbooru.model.tag(p.init_images[0])
+                    elif append_interrogation == "CLIP Historical":
+                        p.prompt += shared.interrogator.interrogate(processed.images[0].crop((0, 0, initial_width, p.height)))
+                    elif append_interrogation == "DeepBooru Historical":
+                        p.prompt += deepbooru.model.tag(processed.images[0].crop((0, 0, initial_width, p.height)))
+                    elif append_interrogation == "CLIP CNet":
+                        p.prompt += shared.interrogator.interrogate(p.control_net_input_image)
+                    elif append_interrogation == "DeepBooru CNet":
+                        p.prompt += deepbooru.model.tag(p.control_net_input_image)
 
-                state.job = f"Iteration {i + 1}/{loops}, batch {n + 1}/{batch_count}"
-
-                processed = processing.process_images(p)
+                state.job = f"Iteration {i + 1}/{loops}, batch {n + 1}/{batch_count}" 
 
                 if initial_seed is None:
                     initial_seed = processed.seed
