@@ -25,7 +25,7 @@ class Script(scripts.Script):
     
         with gr.Row(variant="panel"):
         
-            loopback_source = gr.Dropdown(label="Loopback Source", choices=["FirstGen", "InputFrame", "PreviousFrame" ], value="FirstGen")
+            loopback_source = gr.Dropdown(label="Loopback Source", choices=["FirstGen", "InputFrame", "PreviousFrame", "CNetFrame" ], value="FirstGen")
             
             third_frame_image = gr.Dropdown(label="Third Frame", choices=["None", "FirstGen", "GuideImg", "Historical"], value="FirstGen")
             
@@ -50,8 +50,8 @@ class Script(scripts.Script):
         with gr.Row(variant="panel"):        
             reference_imgs = gr.File(file_count="multiple", file_types = ['.png','.jpg','.jpeg'], label="Upload Guide Frames", show_label=True, live=True)
             
-        with gr.Accordion(label="About this version!", open=False):
-            gr.HTML(value="<p style='margin-top: 10rem, margin-bottom: 10rem'>Script taken from <a href='https://xanthius.itch.io/multi-frame-rendering-for-stablediffusion'>xanthius</a> (click the link for details and if you like this script you should buy him a coffee!)</p><p>I cleaned up, changed the defaults and sorted the UI. The default values are set to what works best for me in most cases.</p><p>I also added some quality-of-life features:<br><ul><li>Use every Nth frame: skip guide frames (for preview or ebsynth)</li><li>Render grid: enable to render the grid</li><li>Rows in grid: how many horizontal rows the grid should have</li> <li>Fixed file upload</li></ul></p>")
+        with gr.Accordion(label="INFO!", open=False):
+            gr.HTML(value="<p style='margin-top: 10rem, margin-bottom: 10rem'>This is a modified script originally written by <a href='https://xanthius.itch.io/multi-frame-rendering-for-stablediffusion'>xanthius</a> (click the link for details and buy him a coffee!)</p><p>I cleaned up, changed the defaults and sorted the UI. The default values are set to what works best for me in most cases.</p><p>I also added some quality-of-life features:<br><ul><li>Use every Nth frame: skip guide frames (for preview or ebsynth)</li><li>Render grid: enable to render the grid</li><li>Rows in grid: how many horizontal rows the grid should have</li> <li>Fixed file upload</li></ul><li>added more interrogation options</li></p>")
 
         return [append_interrogation, reference_imgs, first_denoise, third_frame_image, color_correction_enabled, unfreeze_seed, render_grid,grid_rows, use_nth_frame, loopback_source]
 
