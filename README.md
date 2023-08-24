@@ -1,3 +1,3 @@
 # SD-scripts
 
-Collection of (modified) scripts for Automatic1111
+modified scripts for Automatic1111 / vladmandic
