@@ -25,7 +25,7 @@ class Script(scripts.Script):
     
         with gr.Row(variant="panel"):
         
-            loopback_source = gr.Dropdown(label="Loopback Source", choices=["FirstGen", "InputFrame", "PreviousFrame", "CNetFrame" ], value="FirstGen")
+            loopback_source = gr.Dropdown(label="Loopback Source", choices=["FirstGen", "InputFrame", "PreviousFrame" ], value="FirstGen")
             
             third_frame_image = gr.Dropdown(label="Third Frame", choices=["None", "FirstGen", "GuideImg", "Historical"], value="FirstGen")
             
@@ -50,7 +50,7 @@ class Script(scripts.Script):
         with gr.Row(variant="panel"):        
             reference_imgs = gr.File(file_count="multiple", file_types = ['.png','.jpg','.jpeg'], label="Upload Guide Frames", show_label=True, live=True)
             
-        with gr.Accordion(label="INFO!", open=False):
+        with gr.Accordion(label="Info", open=False):
             gr.HTML(value="<p style='margin-top: 10rem, margin-bottom: 10rem'>This is a modified script originally written by <a href='https://xanthius.itch.io/multi-frame-rendering-for-stablediffusion'>xanthius</a> (click the link for details and buy him a coffee!)</p><p>I cleaned up, changed the defaults and sorted the UI. The default values are set to what works best for me in most cases.</p><p>I also added some quality-of-life features:<br><ul><li>Use every Nth frame: skip guide frames (for preview or ebsynth)</li><li>Render grid: enable to render the grid</li><li>Rows in grid: how many horizontal rows the grid should have</li> <li>Fixed file upload</li></ul><li>added more interrogation options</li></p>")
 
         return [append_interrogation, reference_imgs, first_denoise, third_frame_image, color_correction_enabled, unfreeze_seed, render_grid,grid_rows, use_nth_frame, loopback_source]
@@ -66,7 +66,7 @@ class Script(scripts.Script):
         # batch_count = math.floor (p.n_iter / use_nth_frame)
         batch_count = p.n_iter
         
-        shared.log.info(f"p.n_iter={p.n_iter}  use_nth_frame={use_nth_frame} batch_count={batch_count} loops={loops}")
+        shared.log.info(f"=======> p.n_iter={p.n_iter} use_nth_frame={use_nth_frame} batch_count={batch_count} loops={loops}")
         
         p.batch_size = 1
         p.n_iter = 1
@@ -102,7 +102,13 @@ class Script(scripts.Script):
                 p.n_iter = 1
                 p.batch_size = 1
                 p.do_not_save_grid = True
-                p.control_net_input_image = Image.open(reference_imgs[i*use_nth_frame].name).convert("RGB").resize((initial_width, p.height), Image.ANTIALIAS)
+                
+                # p.control_net_input_image = Image.open(reference_imgs[i*use_nth_frame].name).convert("RGB").resize((initial_width, p.height), Image.ANTIALIAS)
+
+                reference_image = Image.open(reference_imgs[i*use_nth_frame].name).convert("RGB")
+                aspect_ratio = reference_image.width / reference_image.height
+                new_height = int(initial_width // aspect_ratio)
+                p.control_net_input_image = reference_image.resize((initial_width, new_height), Image.ANTIALIAS)
 
                 if(i > 0):
                     loopback_image = p.init_images[0]
@@ -111,12 +117,10 @@ class Script(scripts.Script):
                     elif loopback_source == "FirstGen":
                         loopback_image = history[0]
 
-
                     if third_frame_image != "None" and i > 1:
                         p.width = initial_width * 3
                         img = Image.new("RGB", (initial_width*3, p.height))
                         img.paste(p.init_images[0], (0, 0))
-                        # img.paste(p.init_images[0], (initial_width, 0))
                         img.paste(loopback_image, (initial_width, 0))
                         img.paste(third_image, (initial_width*2, 0))
                         p.init_images = [img]
@@ -138,7 +142,6 @@ class Script(scripts.Script):
                         p.width = initial_width * 2
                         img = Image.new("RGB", (initial_width*2, p.height))
                         img.paste(p.init_images[0], (0, 0))
-                        # img.paste(p.init_images[0], (initial_width, 0))
                         img.paste(loopback_image, (initial_width, 0))
                         p.init_images = [img]
                         if color_correction_enabled:
@@ -150,19 +153,14 @@ class Script(scripts.Script):
                         p.control_net_input_image = msk
                         frames.append(msk)
 
-                        # latent_mask = Image.new("RGB", (initial_width*2, p.height), "white")
-                        # latent_draw = ImageDraw.Draw(latent_mask)
-                        # latent_draw.rectangle((0,0,initial_width,p.height), fill="black")
                         latent_mask = Image.new("RGB", (initial_width*2, p.height), "black")
                         latent_draw = ImageDraw.Draw(latent_mask)
                         latent_draw.rectangle((initial_width,0,initial_width*2,p.height), fill="white")
-
-                        # p.latent_mask = latent_mask
                         p.image_mask = latent_mask
                         p.denoising_strength = original_denoise
+
                 else:
                     latent_mask = Image.new("RGB", (initial_width, p.height), "white")
-                    # p.latent_mask = latent_mask
                     p.image_mask = latent_mask
                     p.denoising_strength = first_denoise
                     p.control_net_input_image = p.control_net_input_image.resize((initial_width, p.height))
