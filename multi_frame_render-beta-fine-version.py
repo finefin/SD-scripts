@@ -66,7 +66,7 @@ class Script(scripts.Script):
         # batch_count = math.floor (p.n_iter / use_nth_frame)
         batch_count = p.n_iter
         
-        shared.log.info(f"=======> p.n_iter={p.n_iter} use_nth_frame={use_nth_frame} batch_count={batch_count} loops={loops}")
+        # shared.log.info(f"=======> p.n_iter={p.n_iter} use_nth_frame={use_nth_frame} batch_count={batch_count} loops={loops}")
         
         p.batch_size = 1
         p.n_iter = 1
